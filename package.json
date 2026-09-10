@@ -1,0 +1,109 @@
+{
+  "name": "opencode-context",
+  "displayName": "opencode Context",
+  "description": "Right-click to add the current selection/file to the opencode prompt, with live selection tracking.",
+  "version": "0.1.2",
+  "publisher": "yumon",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "opencodeContext.addSelection",
+        "title": "Add Selection to opencode",
+        "category": "opencode"
+      },
+      {
+        "command": "opencodeContext.addSelectionWithText",
+        "title": "Add Selection + Code to opencode",
+        "category": "opencode"
+      },
+      {
+        "command": "opencodeContext.addFile",
+        "title": "Add File to opencode",
+        "category": "opencode"
+      },
+      {
+        "command": "opencodeContext.openTerminal",
+        "title": "Open opencode Terminal",
+        "category": "opencode"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "opencodeContext.addSelection",
+          "when": "editorHasSelection",
+          "group": "opencode@1"
+        },
+        {
+          "command": "opencodeContext.addSelectionWithText",
+          "when": "editorHasSelection",
+          "group": "opencode@2"
+        },
+        {
+          "command": "opencodeContext.addFile",
+          "group": "opencode@3"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "opencodeContext.addSelection",
+        "key": "ctrl+alt+k",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "opencodeContext.addSelectionWithText",
+        "key": "ctrl+alt+shift+k",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "opencode Context",
+      "properties": {
+        "opencodeContext.autoShare": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Automatically append the current selection reference to the opencode prompt whenever the selection changes (debounced + de-duplicated). Off by default because it keeps appending text to the prompt. For live AI access to the selection, prefer the `selection` custom tool instead."
+        },
+        "opencodeContext.autoShareMode": {
+          "type": "string",
+          "enum": [
+            "reference",
+            "referenceWithText"
+          ],
+          "default": "reference",
+          "description": "What to append when auto-share is enabled."
+        },
+        "opencodeContext.debounceMs": {
+          "type": "number",
+          "default": 700,
+          "description": "Debounce (ms) before an auto-shared selection is forwarded."
+        },
+        "opencodeContext.port": {
+          "type": "number",
+          "default": 0,
+          "description": "Override the opencode server port. 0 = auto-detect from the opencode terminal."
+        },
+        "opencodeContext.writeBridge": {
+          "type": "boolean",
+          "default": true,
+          "description": "Write the live selection to ~/.config/opencode/selection.json so the opencode `selection` tool can read it."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "package": "npx --yes @vscode/vsce package --allow-missing-repository --skip-license"
+  }
+}
