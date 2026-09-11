@@ -29,6 +29,9 @@ function activate(context) {
     vscode.commands.registerCommand("opencodeContext.addFile", () =>
       addToPrompt({ mode: "file" }),
     ),
+    vscode.commands.registerCommand("opencodeContext.addFiles", (uri, selectedUris) =>
+      addFilesToPrompt(uri, selectedUris),
+    ),
     vscode.commands.registerCommand("opencodeContext.openTerminal", () => openTerminal()),
     vscode.window.onDidChangeTextEditorSelection(onSelectionChange),
     vscode.window.onDidChangeActiveTextEditor((editor) => {
@@ -108,6 +111,36 @@ async function addToPrompt(opts) {
   const payload = buildPayload(info, opts.mode)
   if (!payload) return
   const ok = await sendToOpencode(payload)
+  if (!ok) {
+    vscode.window.showWarningMessage(
+      "opencode: 未找到运行中的 opencode（请先用 Ctrl+Esc 或命令面板打开 opencode 终端）",
+    )
+  }
+}
+
+async function addFilesToPrompt(uri, selectedUris) {
+  const uris =
+    Array.isArray(selectedUris) && selectedUris.length > 0
+      ? selectedUris
+      : uri
+        ? [uri]
+        : []
+  const fileUris = []
+  for (const u of uris) {
+    if (!u || u.scheme !== "file") continue
+    try {
+      const stat = await vscode.workspace.fs.stat(u)
+      if (stat.type === vscode.FileType.File) fileUris.push(u)
+    } catch (_) {}
+  }
+  if (fileUris.length === 0) {
+    vscode.window.showWarningMessage("opencode: 未选择文件")
+    return
+  }
+  const refs = fileUris
+    .map((u) => "@" + vscode.workspace.asRelativePath(u, false))
+    .join(" ")
+  const ok = await sendToOpencode(refs)
   if (!ok) {
     vscode.window.showWarningMessage(
       "opencode: 未找到运行中的 opencode（请先用 Ctrl+Esc 或命令面板打开 opencode 终端）",

@@ -2,7 +2,7 @@
   "name": "opencode-context",
   "displayName": "opencode Context",
   "description": "Right-click to add the current selection/file to the opencode prompt, with live selection tracking.",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "publisher": "yumon",
   "license": "MIT",
   "engines": {
@@ -33,6 +33,11 @@
         "category": "opencode"
       },
       {
+        "command": "opencodeContext.addFiles",
+        "title": "Add File(s) to opencode",
+        "category": "opencode"
+      },
+      {
         "command": "opencodeContext.openTerminal",
         "title": "Open opencode Terminal",
         "category": "opencode"
@@ -53,6 +58,18 @@
         {
           "command": "opencodeContext.addFile",
           "group": "opencode@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "opencodeContext.addFiles",
+          "group": "opencode@1"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "opencodeContext.addFiles",
+          "group": "opencode@1"
         }
       ]
     },
